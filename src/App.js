@@ -1,72 +1,62 @@
-import logo from './logo.svg';
-import './App.css';
-import { createElement } from 'react';
+import styles from './App.module.css';
+import { useState } from 'react';
 
-const date = new Date().getFullYear();
+export function App() {
+	const [value, setValue] = useState('')
+	const [list, setList] = useState([])
+	const [error, setError] = useState('')
 
-// export function App() {
-// 	return (
-// 		<div className='App'>
-// 			<header className='App-header'>
-// 				<img src={logo} className='App-logo' alt='logo' />
-// 				<p>
-// 					Edit <code>src/App.js</code> and save to reload 2.
-// 				</p>
-// 				<a
-// 					className='App-link'
-// 					href='https://reactjs.org'
-// 					target='_blank'
-// 					rel='noopener noreferrer'
-// 				>
-// 					Learn React
-// 				</a>
-// 				<h2>
-// 					{date}
-// 				</h2>
-// 			</header>
-// 		</div>
-// 	);
-// }
+	const isValueValid = value.length >= 3
 
-//весь App.js является декларативным
+	const onInputButtonClick = () => {
+    const promptValue = prompt('Введите значение')
 
-export function App () {
-	return createElement(
-		'div',
-		{ className: 'App' },
-		createElement(
-			'header',
-			{ className: 'App-header' },
-			createElement(
-				'img',
-				{ 
-					src: logo ,
-				 	className: 'App-logo',
-				 	alt: 'logo' 
-				}
-			),
-			createElement(
-				'p',
-				null,
-				'Edit',
-				createElement('code', null, 'src/App.js' ),
-				' and save to reload 2.'
-			),
-			createElement(
-				'a',
-				{
-					className: 'App-link',
-					href: 'https://reactjs.org',
-					target: '_blank',
-					rel: 'noopener noreferrer',
-				},
-				'Learn React'
-			),
-			createElement(
-				'h2',
-				null,
-				`${date}`
-			)
-		)
+	if (promptValue === null) {
+		return
+	}
+
+	const trimmedValue = promptValue.trim()
+	
+	if(trimmedValue.length < 3) {
+		return setError('Введенное значение должно содержать минимум 3 символа')
+	}
+
+	setError('')
+	setValue(trimmedValue)
+
+	console.log(trimmedValue)
+	}
+
+	const onAddButtonClick = () => {
+		const id = Date.now()
+		const updatedList = [...list, { id, value }]
+		setList(updatedList)
+		setValue('')
+		setError('')
+		console.log(updatedList)
+	}
+
+	return (
+		<div className={styles.app}>
+    		<h1 className={styles.pageHeading}>Ввод значения</h1>
+    		<p className={styles.noMarginText}>
+      			Текущее значение <code>value</code>: "<output className={styles.currentValue}>{value}</output>"
+    		</p>
+    		{error !== '' && <div className={styles.error}>{error}</div>}
+    		<div className={styles.buttonsContainer}>
+      			<button className={styles.button} onClick={onInputButtonClick}>Ввести новое</button>
+      			<button className={styles.button} disabled = {!isValueValid} onClick={onAddButtonClick}>Добавить в список</button>
+    		</div>
+    		<div className={styles.listContainer}>
+      			<h2 className={styles.listHeading}>Список:</h2>
+				{list.length > 0 ? (
+					<ul className={styles.list}>
+        			{list.map((item) => 
+						(<li key={item.id} className={styles.listItem}>{item.value}</li>)
+						)}
+      				</ul>) :
+      			(<p className={styles.noMarginText}>Нет добавленных элементов</p>)}
+    		</div>
+ 		 </div>
 	)
 }
